@@ -11,7 +11,7 @@ class Summarizer:
         self.stream = False
 
     def update_summary(self, previous_summary: str, messages: List[Dict[str, str]]) -> str:
-        prompt = self.build_prompt(previous_summary, messages)
+        prompt = self._build_prompt(previous_summary, messages)
         return self.llm_client.generate_response(
             system_prompt=prompt,
             messages=[],
@@ -22,7 +22,7 @@ class Summarizer:
         )
 
     @staticmethod
-    def build_prompt(summary: str, messages: List[Dict[str, str]]) -> str:
+    def _build_prompt(summary: str, messages: List[Dict[str, str]]) -> str:
         latest_messages = "\n".join(f"{msg['role']}: {msg['content']}" for msg in messages)
 
         prompt = f"""You are expert in summarizing conversation. 

@@ -2,5 +2,5 @@ __pycache__
 .env
 env
 .idea
-src/logs
 logs
+.coverage
