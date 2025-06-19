@@ -2,8 +2,8 @@ from datetime import datetime
 
 from agents import AgentManager
 from llm_client import LLMClient
+from logger import setup_logging
 from memory import ConversationMemory
-from utils import setup_logging
 
 
 class Chatbot:
@@ -92,21 +92,21 @@ class Chatbot:
     def show_help():
         """Display help information"""
         help_text = """
-🤖 AI Chatbot Help:
-
-AGENTS:
-  @Sentinel  - Cybersecurity advisor
-  @FinGuide  - Financial consultant  
-  @EduBot    - Educational tutor
-
-COMMANDS:
-  reset      - Reset conversation
-  quit       - Exit chatbot
-  help       - Show this help
-
-USAGE:
-  - Ask any question naturally
-  - Use @AgentName to directly call an agent
-  - System will auto-select best agent otherwise
+        🤖 AI Chatbot Help:
+        
+        AGENTS:
+          @Sentinel  - Cybersecurity advisor
+          @FinGuide  - Financial consultant  
+          @EduBot    - Educational tutor
+        
+        COMMANDS:
+          reset      - Reset conversation
+          quit       - Exit chatbot
+          help       - Show this help
+        
+        USAGE:
+          - Ask any question naturally
+          - Use @AgentName to directly call an agent
+          - System will auto-select best agent otherwise
         """
         print(help_text)

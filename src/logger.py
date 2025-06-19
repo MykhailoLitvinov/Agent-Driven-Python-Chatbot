@@ -2,8 +2,6 @@ import logging
 import os
 from datetime import datetime
 
-import yaml
-
 
 def setup_logging() -> logging.Logger:
     """Set up logging"""
@@ -25,15 +23,3 @@ def setup_logging() -> logging.Logger:
     logger.addHandler(file_handler)
 
     return logger
-
-
-def load_agent_configs(config_dir: str) -> dict:
-    """Load agent configuration files from a directory"""
-    agents = {}
-    for filename in os.listdir(config_dir):
-        if filename.endswith(".yaml"):
-            path = os.path.join(config_dir, filename)
-            with open(path, "r", encoding="utf-8") as f:
-                config = yaml.safe_load(f)
-                agents[config["name"]] = config
-    return agents
