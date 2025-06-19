@@ -12,10 +12,10 @@ class LLMClient:
 
     def __init__(self):
         self.client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-        self.model = "gpt-4o-mini"
-        self.max_tokens = 1000
 
-    def generate_response(self, system_prompt: str, messages: List[Dict], temperature: float) -> str:
+    def generate_response(
+        self, system_prompt: str, messages: List[Dict], model: str, temperature: float, max_tokens: int
+    ) -> str:
         """Generate a response using the OpenAI API"""
         try:
             # Prepare messages for the API
@@ -23,7 +23,7 @@ class LLMClient:
             api_messages.extend(messages)
 
             response = self.client.chat.completions.create(
-                model=self.model, messages=api_messages, max_tokens=self.max_tokens, temperature=temperature
+                model=model, messages=api_messages, max_tokens=max_tokens, temperature=temperature
             )
 
             return response.choices[0].message.content.strip()

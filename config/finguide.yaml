@@ -1,6 +1,8 @@
 name: FinGuide
 alias: "@FinGuide"
-temperature: 0.4
+temperature: 0.5
+model: gpt-4o-mini
+max_tokens: 1000
 keywords:
   - money
   - budget

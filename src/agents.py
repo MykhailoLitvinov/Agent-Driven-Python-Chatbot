@@ -54,10 +54,19 @@ class AgentManager:
             return f"Error: Agent {agent_name} not found"
 
         agent_config = self.agent_configs[agent_name]
-        system_prompt = agent_config["system_prompt"]
-        agent_temperature = float(agent_config.get("temperature", 1))
 
-        return self.llm_client.generate_response(system_prompt, context.get("messages", []), agent_temperature)
+        system_prompt = agent_config["system_prompt"]
+        agent_model = agent_config["model"]
+        max_tokens = agent_config["max_tokens"]
+        agent_temperature = agent_config["temperature"]
+
+        return self.llm_client.generate_response(
+            system_prompt=system_prompt,
+            messages=context.get("messages", []),
+            model=agent_model,
+            temperature=agent_temperature,
+            max_tokens=max_tokens,
+        )
 
     @staticmethod
     def _calculate_relevance_score(query: str, keywords: List[str]) -> float:
