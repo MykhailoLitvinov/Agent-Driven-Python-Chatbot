@@ -29,11 +29,13 @@ A modular, console-based chatbot built with Python that supports agent switching
     edubot.yaml
 
 /src
+    __init__.py         # Package initialization
     agents.py           # AgentManager: selects and manages agents
     chatbot.py          # Chatbot core: handles input, context, response
     llm_client.py       # LLM wrapper (e.g., OpenAI)
+    logger.py           # Logging utilities and configuration
     memory.py           # Context & summary buffer
-    utils.py            # Helpers: config loading, logging, formatting
+    summarizer.py       # Message summarization functionality
 
 /tests
     ...                 # Unit tests (pytest)
@@ -61,9 +63,7 @@ pip install -r requirements.txt
 ### 2. Setup `.env`
 Create a `.env` file based on `.env.example`:
 ```
-OPENAI_API_KEY=your_key_here
-OPENAI_MODEL=gpt-3.5-turbo
-SUMMARY_MESSAGE_LIMIT=5
+OPENAI_API_KEY=YOUR_API_KEY
 ```
 
 ### 3. Run the Chatbot
