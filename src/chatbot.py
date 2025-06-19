@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from agents import AgentManager
+from agents import AgentManager, AgentName
 from llm_client import LLMClient
 from logger import setup_logging
 from memory import ConversationMemory
@@ -12,7 +12,7 @@ class Chatbot:
     def __init__(self):
         self.llm_client = LLMClient()
         self.memory = ConversationMemory()
-        self.default_agent = self.current_agent = "EduBot"  # TODO: validate agent name
+        self.default_agent = self.current_agent = AgentName.EDUBOT.value
         self.agent_manager = AgentManager(self.llm_client, self.default_agent)
         self.logger = setup_logging()
 
@@ -31,9 +31,6 @@ class Chatbot:
                     break
                 elif user_input.lower() == "reset":
                     self.reset_conversation()
-                    continue
-                elif user_input.lower() == "help":
-                    self.show_help()
                     continue
 
                 # Handle regular user query
@@ -87,26 +84,3 @@ class Chatbot:
         self.current_agent = self.default_agent
         print("🔄 Conversation reset!")
         self.logger.info("Conversation reset")
-
-    @staticmethod
-    def show_help():
-        """Display help information"""
-        help_text = """
-        🤖 AI Chatbot Help:
-        
-        AGENTS:
-          @Sentinel  - Cybersecurity advisor
-          @FinGuide  - Financial consultant  
-          @EduBot    - Educational tutor
-        
-        COMMANDS:
-          reset      - Reset conversation
-          quit       - Exit chatbot
-          help       - Show this help
-        
-        USAGE:
-          - Ask any question naturally
-          - Use @AgentName to directly call an agent
-          - System will auto-select best agent otherwise
-        """
-        print(help_text)

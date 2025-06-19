@@ -1,4 +1,5 @@
 import os
+from enum import Enum
 from typing import Dict, List
 
 import yaml
@@ -8,10 +9,20 @@ from llm_client import LLMClient
 CONFIG_DIR = "../config"
 
 
+class AgentName(str, Enum):
+    SENTINEL = "Sentinel"
+    FINGUIDE = "FinGuide"
+    EDUBOT = "EduBot"
+
+    @classmethod
+    def values(cls):
+        return [agent.value for agent in cls]
+
+
 class AgentManager:
     """Agent manager"""
 
-    def __init__(self, llm_client: LLMClient, default_agent: str):
+    def __init__(self, llm_client: LLMClient, default_agent: AgentName):
         self.llm_client = llm_client
         self.default_agent = default_agent
         self.agent_configs = self._load_agent_configs(CONFIG_DIR)
