@@ -4,6 +4,7 @@ from src.agents import AgentManager, AgentName
 from src.llm_client import LLMClient
 from src.logger import setup_logging
 from src.memory import ConversationMemory
+from src.summarizer import Summarizer
 
 
 class Chatbot:
@@ -11,7 +12,7 @@ class Chatbot:
 
     def __init__(self):
         self.llm_client = LLMClient()
-        self.memory = ConversationMemory()
+        self.memory = ConversationMemory(summarizer=Summarizer(self.llm_client))
         self.default_agent = self.current_agent = AgentName.EDUBOT.value
         self.agent_manager = AgentManager(self.llm_client, self.default_agent)
         self.logger = setup_logging()
@@ -69,7 +70,7 @@ class Chatbot:
         self.logger.info(f"Retrieved response from {selected_agent}: {response}")
 
         # Save response to memory
-        self.memory.add_message("assistant", response, self.current_agent)
+        self.memory.add_message("assistant", response)
 
         # Log processing time
         duration = (datetime.now() - start_time).total_seconds()

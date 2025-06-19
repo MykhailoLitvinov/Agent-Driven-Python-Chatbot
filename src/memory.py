@@ -1,43 +1,41 @@
-from datetime import datetime
 from typing import List, Dict, Any
+from src.summarizer import Summarizer
 
 
 class ConversationMemory:
     """Manage conversation memory using the Summary Buffer approach"""
 
-    def __init__(self, max_raw_messages: int = 10):
+    def __init__(self, summarizer: Summarizer, max_raw_messages: int = 10):
         self.max_raw_messages = max_raw_messages
-        self.messages: List[Dict] = []
-        self.summary: str = ""  # TODO Add logic for summarizing
-        self.conversation_id = f"conv_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        self.messages: List[Dict[str, str]] = []
+        self.summary: str = ""
+        self.summarizer = summarizer
 
-    def add_message(self, role: str, content: str, agent: str = None):
+    def add_message(self, role: str, content: str):
         """Add a message to the memory"""
-        message = {"role": role, "content": content, "timestamp": datetime.now().isoformat(), "agent": agent}
-
+        message = {"role": role, "content": content}
         self.messages.append(message)
 
-        # If the limit is exceeded - trim the messages (simplified version without summary)
+        # If message limit exceeded – summarize older ones
         if len(self.messages) > self.max_raw_messages:
-            # Keep only the latest messages
+            # Identify messages to summarize
+            messages_to_summarize = self.messages[: -self.max_raw_messages // 2]
+
+            # Update summary using LLM
+            self.summary = self.summarizer.update_summary(self.summary, messages_to_summarize)
+
+            # Keep only the most recent messages
             self.messages = self.messages[-self.max_raw_messages // 2 :]
 
     def get_context(self) -> Dict[str, Any]:
         """Get context for the LLM"""
-        # Format messages for the LLM
-        formatted_messages = []
-        for msg in self.messages[-8:]:  # Last 8 messages
-            formatted_messages.append({"role": msg["role"], "content": msg["content"]})
-
+        formatted_messages = self.messages[-self.max_raw_messages :]
         return {
             "messages": formatted_messages,
             "summary": self.summary,
-            "conversation_id": self.conversation_id,
-            "message_count": len(self.messages),
         }
 
     def reset(self):
         """Reset the memory"""
         self.messages = []
         self.summary = ""
-        self.conversation_id = f"conv_{datetime.now().strftime('%Y%m%d_%H%M%S')}"

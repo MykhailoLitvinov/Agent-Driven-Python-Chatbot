@@ -56,6 +56,8 @@ class AgentManager:
         agent_config = self.agent_configs[agent_name]
 
         system_prompt = agent_config["system_prompt"]
+        if summary := context.get("summary"):
+            system_prompt = f"{system_prompt}\nConversation summary: {summary}"
         agent_model = agent_config["model"]
         max_tokens = agent_config["max_tokens"]
         agent_temperature = agent_config["temperature"]

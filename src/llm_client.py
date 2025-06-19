@@ -15,7 +15,13 @@ class LLMClient:
         self.client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
     def generate_response(
-        self, system_prompt: str, messages: List[Dict[str, str]], model: str, temperature: float, max_tokens: int
+        self,
+        system_prompt: str,
+        messages: List[Dict[str, str]],
+        model: str,
+        temperature: float,
+        max_tokens: int,
+        stream=True,
     ) -> str:
         """Generate a streamed response using the OpenAI API"""
 
@@ -25,24 +31,28 @@ class LLMClient:
             full_messages.extend(messages)
 
             # Initiate streaming request
-            stream = self.client.chat.completions.create(
+            response = self.client.chat.completions.create(
                 model=model,
                 messages=full_messages,
-                max_tokens=max_tokens,
+                max_completion_tokens=max_tokens,
                 temperature=temperature,
-                stream=True,
+                stream=stream,
             )
+
+            if not stream:
+                return response.choices[0].message.content.strip()
 
             response_text = ""
             printed_first_token = False
 
-            for chunk in stream:
+            for chunk in response:
                 token = chunk.choices[0].delta.content
-                response_text += chunk.choices[0].delta.content
-                if not printed_first_token:
-                    token = f"🤖 {token}"
-                    printed_first_token = True
-                print(token, end="", flush=True)
+                if token:
+                    response_text += token
+                    if not printed_first_token:
+                        token = f"🤖 {token}"
+                        printed_first_token = True
+                    print(token, end="", flush=True)
 
             print()  # Newline after full response
             return response_text
