@@ -27,7 +27,7 @@ class AgentManager:
         self.default_agent = default_agent
         self.agent_configs = self._load_agent_configs(CONFIG_DIR)
 
-    def select_agent(self, query: str) -> str:
+    def select_agent(self, query: str) -> str:  # TODO: Use gpt for selecting agent
         """Select the best agent for a given query"""
         query_lower = query.lower()
 
