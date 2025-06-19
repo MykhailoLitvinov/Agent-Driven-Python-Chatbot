@@ -34,8 +34,7 @@ class Chatbot:
                     continue
 
                 # Handle regular user query
-                response = self.process_query(user_input)
-                print(f"🤖 {self.current_agent}: {response}")
+                self.process_query(user_input)
 
             except KeyboardInterrupt:
                 print("\n👋 Goodbye!")
