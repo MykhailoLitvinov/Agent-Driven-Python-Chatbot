@@ -4,9 +4,9 @@ from typing import Dict, List
 
 import yaml
 
-from llm_client import LLMClient
+from src.llm_client import LLMClient
 
-CONFIG_DIR = "../config"
+CONFIG_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config")
 
 
 class AgentName(str, Enum):

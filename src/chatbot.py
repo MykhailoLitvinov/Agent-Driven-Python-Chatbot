@@ -1,9 +1,9 @@
 from datetime import datetime
 
-from agents import AgentManager, AgentName
-from llm_client import LLMClient
-from logger import setup_logging
-from memory import ConversationMemory
+from src.agents import AgentManager, AgentName
+from src.llm_client import LLMClient
+from src.logger import setup_logging
+from src.memory import ConversationMemory
 
 
 class Chatbot:
