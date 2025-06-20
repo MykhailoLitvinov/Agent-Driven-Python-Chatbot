@@ -1,0 +1,16 @@
+name: Summarizer
+model: gpt-4o-mini
+temperature: 0.3
+max_tokens: 300
+stream: false
+system_prompt: |
+  You are expert in summarizing conversation. 
+  Your goal is to provide compact and clear summary based on latest messages and previous summary.
+
+  Previous summary:
+  {previous_summary}
+
+  Latest messages:
+  {latest_messages}
+
+  Provide an updated summary below:

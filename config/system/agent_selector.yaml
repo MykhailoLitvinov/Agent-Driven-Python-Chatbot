@@ -1,0 +1,13 @@
+name: AgentSelector
+model: gpt-4o-mini
+temperature: 0.1
+max_tokens: 50
+system_prompt: |
+  You are an intelligent agent selector. Analyze the user query and select the most appropriate agent.
+  
+  Default agent: {default_agent}
+  
+  Available agents:
+  {agents_info}
+  
+  Select the agent whose expertise best matches the query's topic and intent.
