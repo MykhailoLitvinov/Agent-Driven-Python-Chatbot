@@ -1,3 +1,4 @@
+import json
 from typing import List, Dict
 from src.llm_client import LLMClient
 
@@ -9,17 +10,35 @@ class Summarizer:
         self.temperature = 0.3
         self.max_tokens = 300
         self.stream = False
+        self.response_format = {
+            "type": "json_schema",
+            "json_schema": {
+                "name": "summary_response",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "summary": {"type": "string"},
+                    },
+                    "required": ["summary"],
+                    "additionalProperties": False,
+                },
+            },
+        }
 
     def update_summary(self, previous_summary: str, messages: List[Dict[str, str]]) -> str:
         prompt = self._build_prompt(previous_summary, messages)
-        return self.llm_client.generate_response(
+        generated_response = self.llm_client.generate_response(
             system_prompt=prompt,
             messages=[],
             model=self.model,
             temperature=self.temperature,
             max_tokens=self.max_tokens,
             stream=self.stream,
+            response_format=self.response_format,
         )
+        generated_response = json.loads(generated_response)
+
+        return generated_response["summary"]
 
     @staticmethod
     def _build_prompt(summary: str, messages: List[Dict[str, str]]) -> str:

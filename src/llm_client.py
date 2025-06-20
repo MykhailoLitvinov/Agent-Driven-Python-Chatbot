@@ -21,25 +21,26 @@ class LLMClient:
         model: str,
         temperature: float,
         max_tokens: int,
-        stream=True,
+        stream: bool = True,
+        response_format=None,
     ) -> str:
-        """Generate a streamed response using the OpenAI API"""
+        """Generate a response using the OpenAI API"""
 
         try:
             # Prepare the full message list
             full_messages: List[ChatCompletionMessageParam] = [{"role": "system", "content": system_prompt}]
             full_messages.extend(messages)
 
-            # Initiate streaming request
+            # Initiate request
             response = self.client.chat.completions.create(
                 model=model,
                 messages=full_messages,
                 max_completion_tokens=max_tokens,
                 temperature=temperature,
                 stream=stream,
+                response_format=response_format,
             )
-
-            if not stream:
+            if not stream or response_format:
                 return response.choices[0].message.content.strip()
 
             response_text = ""

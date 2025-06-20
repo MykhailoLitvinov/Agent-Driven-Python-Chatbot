@@ -5,7 +5,7 @@ from src.summarizer import Summarizer
 class ConversationMemory:
     """Manage conversation memory using the Summary Buffer approach"""
 
-    def __init__(self, summarizer: Summarizer, max_raw_messages: int = 10):
+    def __init__(self, summarizer: Summarizer, max_raw_messages: int = 1):
         self.max_raw_messages = max_raw_messages
         self.messages: List[Dict[str, str]] = []
         self.summary: str = ""
