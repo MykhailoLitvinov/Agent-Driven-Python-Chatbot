@@ -27,11 +27,9 @@ class LLMClient:
         """Generate a response using the OpenAI API"""
 
         try:
-            # Prepare the full message list
             full_messages: List[ChatCompletionMessageParam] = [{"role": "system", "content": system_prompt}]
             full_messages.extend(messages)
 
-            # Initiate request
             response = self.client.chat.completions.create(
                 model=model,
                 messages=full_messages,

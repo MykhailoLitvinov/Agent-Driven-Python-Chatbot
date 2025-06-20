@@ -39,12 +39,10 @@ class AgentManager:
             if f"@{agent_name}".lower() in query_lower:
                 return agent_name
 
-        # Use LLM to intelligently select the best agent
         return self._select_agent_with_llm(query)
 
     def _select_agent_with_llm(self, query: str) -> str:
         """Use LLM to select the most appropriate agent for the query"""
-        # Create system prompt describing available agents
         agent_descriptions = []
         agent_names = list(self.agent_configs.keys())
 
@@ -54,12 +52,10 @@ class AgentManager:
 
         agents_info = "\n".join(agent_descriptions)
 
-        # Use configuration for system prompt
         system_prompt = self.selector_config["system_prompt"].format(
             agents_info=agents_info, default_agent=self.default_agent
         )
 
-        # JSON schema for structured response - only agent name
         response_format = {
             "type": "json_schema",
             "json_schema": {
@@ -92,7 +88,6 @@ class AgentManager:
         result = json.loads(response)
         selected_agent = result.get("agent_name")
 
-        # Validate the agent name
         if selected_agent and selected_agent in self.agent_configs:
             return selected_agent
         else:
