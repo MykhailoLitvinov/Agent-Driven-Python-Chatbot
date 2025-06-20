@@ -126,38 +126,6 @@ def test_generate_response_empty_context(agent_manager, mock_llm_client, empty_c
     )
 
 
-def test_calculate_relevance_score_full_match():
-    """Test relevance score calculation with all keywords matching"""
-    query = "I need help with security and password and hack prevention"
-    keywords = ["security", "password", "hack"]
-    score = AgentManager._calculate_relevance_score(query, keywords)
-    assert score == 1.0
-
-
-def test_calculate_relevance_score_partial_match():
-    """Test relevance score calculation with partial keyword matching"""
-    query = "I need help with security"
-    keywords = ["security", "password", "hack"]
-    score = AgentManager._calculate_relevance_score(query, keywords)
-    assert score == pytest.approx(0.333, rel=1e-2)
-
-
-def test_calculate_relevance_score_no_match():
-    """Test relevance score calculation with no keyword matching"""
-    query = "Hello world"
-    keywords = ["security", "password", "hack"]
-    score = AgentManager._calculate_relevance_score(query, keywords)
-    assert score == 0.0
-
-
-def test_calculate_relevance_score_empty_keywords():
-    """Test relevance score calculation with empty keywords list"""
-    query = "Hello world"
-    keywords = []
-    score = AgentManager._calculate_relevance_score(query, keywords)
-    assert score == 0.0
-
-
 def test_load_agent_configs_success(temp_config_dir, sample_agent_configs):
     """Test successful loading of agent configurations"""
     result = AgentManager._load_agent_configs(temp_config_dir)

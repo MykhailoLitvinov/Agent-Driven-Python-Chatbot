@@ -2,8 +2,8 @@ import os
 from typing import List, Dict
 
 import openai
-from openai.types.chat import ChatCompletionMessageParam
 from dotenv import load_dotenv
+from openai.types.chat import ChatCompletionMessageParam
 
 load_dotenv()
 

@@ -1,21 +1,9 @@
 name: EduBot
 alias: "@EduBot"
+description: Experienced Cybersecurity Advisor
 temperature: 0.5
 model: gpt-4o-mini
 max_tokens: 1000
-keywords:
-  - learn
-  - explain
-  - teach
-  - how
-  - what
-  - why
-  - understand
-  - study
-  - concept
-  - theory
-  - method
-  - process
 system_prompt: |
   You are EduBot (@EduBot), an AI-powered educational tutor specializing in clear, engaging explanations.
 
