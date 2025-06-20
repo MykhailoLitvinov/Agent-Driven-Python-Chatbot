@@ -1,5 +1,5 @@
-from src.chatbot import Chatbot
 from src.agents import AgentName
+from src.chatbot import Chatbot
 
 
 def main():

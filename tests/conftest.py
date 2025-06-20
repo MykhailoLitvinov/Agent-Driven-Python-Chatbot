@@ -21,6 +21,7 @@ def sample_agent_configs():
     return {
         "Sentinel": {
             "name": "Sentinel",
+            "description": "A security expert specializing in cybersecurity",
             "system_prompt": "You are a security expert",
             "keywords": ["security", "hack", "password"],
             "model": "gpt-4o-mini",
@@ -29,6 +30,7 @@ def sample_agent_configs():
         },
         "FinGuide": {
             "name": "FinGuide",
+            "description": "A financial advisor for budgeting and investments",
             "system_prompt": "You are a financial advisor",
             "keywords": ["money", "budget", "finance"],
             "model": "gpt-4o-mini",
@@ -37,12 +39,25 @@ def sample_agent_configs():
         },
         "EduBot": {
             "name": "EduBot",
+            "description": "An educational assistant for learning and teaching",
             "system_prompt": "You are an educational assistant",
             "keywords": ["learn", "study", "education"],
             "model": "gpt-4o-mini",
             "temperature": 0.4,
             "max_tokens": 1200,
         },
+    }
+
+
+@pytest.fixture
+def sample_selector_config():
+    """Sample selector configuration for testing"""
+    return {
+        "name": "AgentSelector",
+        "model": "gpt-4o-mini",
+        "temperature": 0.1,
+        "max_tokens": 50,
+        "system_prompt": "You are an intelligent agent selector. Select the most appropriate agent.\n\nAvailable agents:\n{agents_info}\n\nDefault agent: {default_agent}",
     }
 
 

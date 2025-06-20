@@ -22,56 +22,34 @@ def test_agent_name_values_class_method():
 
 
 @pytest.fixture
-def agent_manager(mock_llm_client, sample_agent_configs):
+def agent_manager(mock_llm_client, sample_agent_configs, sample_selector_config):
     """Create an AgentManager instance with mocked dependencies"""
-    with patch.object(AgentManager, "_load_agent_configs", return_value=sample_agent_configs):
+    with patch.object(AgentManager, "_load_agent_configs", return_value=sample_agent_configs), patch.object(
+        AgentManager, "_load_selector_config", return_value=sample_selector_config
+    ):
         return AgentManager(mock_llm_client, AgentName.SENTINEL)
 
 
-def test_agent_manager_init(mock_llm_client, sample_agent_configs):
+def test_agent_manager_init(mock_llm_client, sample_agent_configs, sample_selector_config):
     """Test AgentManager initialization"""
-    with patch.object(AgentManager, "_load_agent_configs", return_value=sample_agent_configs) as mock_load:
+    with patch.object(
+        AgentManager, "_load_agent_configs", return_value=sample_agent_configs
+    ) as mock_load_agents, patch.object(
+        AgentManager, "_load_selector_config", return_value=sample_selector_config
+    ) as mock_load_selector:
         manager = AgentManager(mock_llm_client, AgentName.SENTINEL)
 
         assert manager.llm_client == mock_llm_client
         assert manager.default_agent == AgentName.SENTINEL
         assert manager.agent_configs == sample_agent_configs
-        mock_load.assert_called_once()
+        assert manager.selector_config == sample_selector_config
+        mock_load_agents.assert_called_once()
+        mock_load_selector.assert_called_once()
 
 
 def test_select_agent_direct_call(agent_manager, test_queries):
     """Test agent selection with direct call (@AgentName)"""
     result = agent_manager.select_agent(test_queries["direct_call_finguide"])
-    assert result == "FinGuide"
-
-
-def test_select_agent_direct_call_case_insensitive(agent_manager, test_queries):
-    """Test agent selection with direct call is case insensitive"""
-    result = agent_manager.select_agent(test_queries["direct_call_case_insensitive"])
-    assert result == "FinGuide"
-
-
-def test_select_agent_keyword_matching(agent_manager, test_queries):
-    """Test agent selection based on keyword matching"""
-    result = agent_manager.select_agent(test_queries["security_keywords"])
-    assert result == "Sentinel"
-
-
-def test_select_agent_multiple_keywords(agent_manager, test_queries):
-    """Test agent selection with multiple keyword matches"""
-    result = agent_manager.select_agent(test_queries["multiple_security_keywords"])
-    assert result == "Sentinel"
-
-
-def test_select_agent_default_fallback(agent_manager, test_queries):
-    """Test agent selection falls back to default when no matches"""
-    result = agent_manager.select_agent(test_queries["no_keywords"])
-    assert result == AgentName.SENTINEL
-
-
-def test_select_agent_best_score_wins(agent_manager, test_queries):
-    """Test that agent with highest relevance score is selected"""
-    result = agent_manager.select_agent(test_queries["finance_keywords"])
     assert result == "FinGuide"
 
 
@@ -165,18 +143,32 @@ def test_load_agent_configs_empty_directory():
         assert result == {}
 
 
+def test_load_selector_config_success(sample_selector_config):
+    """Test successful loading of selector configuration"""
+    with tempfile.TemporaryDirectory() as temp_dir:
+        config_path = os.path.join(temp_dir, "agent_selector.yaml")
+        with open(config_path, "w") as f:
+            yaml.dump(sample_selector_config, f)
+
+        result = AgentManager._load_selector_config(config_path)
+        assert result == sample_selector_config
+
+
 @pytest.mark.parametrize(
-    "query,expected_agent",
+    "query,expected_agent,mock_response",
     [
-        ("@Sentinel help with security", "Sentinel"),
-        ("@FinGuide budget advice", "FinGuide"),
-        ("@EduBot teach me", "EduBot"),
-        ("security password hack", "Sentinel"),
-        ("money budget finance", "FinGuide"),
-        ("learn study education", "EduBot"),
+        ("@Sentinel help with security", "Sentinel", None),  # Direct call, no LLM needed
+        ("@FinGuide budget advice", "FinGuide", None),  # Direct call, no LLM needed
+        ("@EduBot teach me", "EduBot", None),  # Direct call, no LLM needed
+        ("security password hack", "Sentinel", '{"agent_name": "Sentinel"}'),
+        ("money budget finance", "FinGuide", '{"agent_name": "FinGuide"}'),
+        ("learn study education", "EduBot", '{"agent_name": "EduBot"}'),
     ],
 )
-def test_select_agent_parametrized(agent_manager, query, expected_agent):
+def test_select_agent_parametrized(agent_manager, mock_llm_client, query, expected_agent, mock_response):
     """Parametrized test for agent selection"""
+    if mock_response:
+        mock_llm_client.generate_response.return_value = mock_response
+
     result = agent_manager.select_agent(query)
     assert result == expected_agent

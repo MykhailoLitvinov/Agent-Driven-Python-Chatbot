@@ -132,6 +132,7 @@ def test_generate_response_streaming_success(llm_client, mock_openai_client, sam
             max_completion_tokens=max_tokens,
             temperature=temperature,
             stream=True,
+            response_format=None,
         )
     finally:
         sys.stdout = old_stdout
@@ -171,6 +172,7 @@ def test_generate_response_non_streaming_success(
         max_completion_tokens=max_tokens,
         temperature=temperature,
         stream=False,
+        response_format=None,
     )
 
 
@@ -205,6 +207,7 @@ def test_generate_response_empty_messages(llm_client, mock_openai_client, mock_s
             max_completion_tokens=max_tokens,
             temperature=temperature,
             stream=True,
+            response_format=None,
         )
     finally:
         sys.stdout = old_stdout
@@ -398,6 +401,7 @@ def test_generate_response_different_parameters(
             max_completion_tokens=max_tokens,
             temperature=temperature,
             stream=True,
+            response_format=None,
         )
     finally:
         sys.stdout = old_stdout
@@ -439,3 +443,58 @@ def test_generate_response_message_formatting(llm_client, mock_openai_client, mo
         assert call_args[1]["messages"] == expected_messages
     finally:
         sys.stdout = old_stdout
+
+
+def test_generate_response_with_json_schema_format(llm_client, mock_openai_client, sample_messages):
+    """Test response generation with JSON schema response format"""
+    system_prompt = "You are a helpful assistant"
+    model = "gpt-4o-mini"
+    temperature = 0.5
+    max_tokens = 1000
+
+    response_format = {
+        "type": "json_schema",
+        "json_schema": {
+            "name": "test_response",
+            "schema": {
+                "type": "object",
+                "properties": {"answer": {"type": "string"}},
+                "required": ["answer"],
+                "additionalProperties": False,
+            },
+        },
+    }
+
+    response = Mock()
+    response.choices = [Mock()]
+    response.choices[0].message = Mock()
+    response.choices[0].message.content = '{"answer": "Hello there!"}'
+
+    mock_openai_client.chat.completions.create.return_value = response
+
+    result = llm_client.generate_response(
+        system_prompt=system_prompt,
+        messages=sample_messages,
+        model=model,
+        temperature=temperature,
+        max_tokens=max_tokens,
+        stream=False,
+        response_format=response_format,
+    )
+
+    assert result == '{"answer": "Hello there!"}'
+
+    # Verify API call includes response_format
+    mock_openai_client.chat.completions.create.assert_called_once_with(
+        model=model,
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": "Hello"},
+            {"role": "assistant", "content": "Hi there!"},
+            {"role": "user", "content": "How are you?"},
+        ],
+        max_completion_tokens=max_tokens,
+        temperature=temperature,
+        stream=False,
+        response_format=response_format,
+    )
